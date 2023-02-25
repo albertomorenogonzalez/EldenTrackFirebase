@@ -1,0 +1,15 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>{{'title.bosses' | translate}}</ion-title>
+    <ion-button (click)="onNewBoss()" color="success" slot="end"><ion-icon name="add-outline"></ion-icon>{{'boss.addButton' | translate}}</ion-button>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-row *ngFor="let boss of getBossList() | async" size="6" size-xl="3">
+    <app-boss [boss]="boss" (onEdit)="onEditBoss($event)" (onDelete)="onDeleteBoss($event)"></app-boss>
+  </ion-row>
+</ion-content>
