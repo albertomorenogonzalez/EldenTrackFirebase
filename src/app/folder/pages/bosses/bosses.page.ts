@@ -93,7 +93,7 @@ export class BossesPage implements OnInit {
           text: await await lastValueFrom(this.translate.get('home.delete')),
           role: 'confirm',
           handler: () => {
-            this.bossData.deleteBossById(boss.id);
+            this.bossData.deleteBoss(boss);
             this.presentToastDelete();
           },
         },
@@ -173,5 +173,9 @@ export class BossesPage implements OnInit {
     
   }
 
+
+  async onExport(){
+    this.bossData.writeToFile();
+  }
 
 }

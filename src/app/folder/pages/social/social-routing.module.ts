@@ -18,7 +18,7 @@ const routes: Routes = [
       },
       {
         path: '',
-        redirectTo: 'social/followed-users',
+        redirectTo: 'followed-users',
         pathMatch: 'full'
       }
     ]

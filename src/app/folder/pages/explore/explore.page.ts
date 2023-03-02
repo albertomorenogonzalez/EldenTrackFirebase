@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AlertController, ToastController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { lastValueFrom } from 'rxjs';
-import { FirebaseService, Follow, FollowService, UserService } from 'src/app/core';
+import { UserService } from 'src/app/core';
 import { User } from 'src/app/core/models/user.model';
 
 @Component({
@@ -16,8 +16,7 @@ export class ExplorePage implements OnInit {
     public userData: UserService,
     private userSvc: UserService,
     private alert: AlertController,
-    private translate: TranslateService,
-    private firebase:FirebaseService
+    private translate: TranslateService
   ) { }
 
   ngOnInit() {
@@ -43,7 +42,7 @@ export class ExplorePage implements OnInit {
           text: await lastValueFrom(this.translate.get('home.delete')),
           role: 'confirm',
           handler: () => {
-            this.userSvc.deleteUserById(user.id);
+            this.userSvc.deleteUser(user);
           },
         },
       ],
@@ -99,5 +98,7 @@ export class ExplorePage implements OnInit {
 
     const { role } = await alert.onDidDismiss();
   }
+
+  
 
 }

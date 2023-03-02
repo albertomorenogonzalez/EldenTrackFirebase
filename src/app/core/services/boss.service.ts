@@ -1,14 +1,16 @@
 import { Injectable } from "@angular/core";
 import { Router } from "@angular/router";
+import { DocumentData } from "firebase/firestore";
 import { BehaviorSubject } from "rxjs";
 import { Boss } from "../models/boss.model";
+import { FileUploaded, FirebaseService } from "./firebase/firebase-service";
 
 @Injectable({
   providedIn: 'root'
 })
 export class BossService {
 
-  private _bossList: Boss[] = [
+  private _bossList: Boss[] = []/*[
     {
       id: 1,
       name: 'Margit, the Fell Omen',
@@ -90,49 +92,119 @@ export class BossService {
       lifePoints: 33251,
       image: 'http://drive.google.com/uc?export=view&id=1I5Tjp9QCEpCGGJN5dp8JlKQZeNl4DoSl'
     },
-  ]
+  ]*/
 
-  private _boss:BehaviorSubject<Boss[]> = new BehaviorSubject(this._bossList);
+  private _boss:BehaviorSubject<Boss[]> = new BehaviorSubject([]);
   public boss$ = this._boss.asObservable();
 
   public addedBoss:Boss|undefined;
 
-  id:number = this._bossList.length+1;
+  unsubscr;
   constructor(
-    
-  ) { 
+    private firebase:FirebaseService
+  ) {
+    this.unsubscr = this.firebase.subscribeToCollection('bosses',this._boss, this.mapBoss);
+  }
+
+  ngOnDestroy(): void {
+    this.unsubscr();
+  }
+
+  private mapBoss(doc:DocumentData){
+    return {
+      id:0,
+      docId:doc["id"],
+      name:doc["data"]().name,
+      area:doc["data"]().area,
+      location:doc["data"]().location,
+      description:doc["data"]().description,
+      lifePoints:doc["data"]().lifePoints,
+      image:doc["data"]().image
+    };
   }
 
   getBossList(){
-    return this._bossList;
+    return this._boss.value;
   }
 
-  addBoss(boss:Boss){
-    boss.id = this.id++;
-    this._bossList.push(boss);
-    this._boss.next(this._bossList);
-  }
-
-  getBossById(id: number) {
-    return this._bossList.find(b=>b.id==id);
-  }
-
-  updateBoss(boss:Boss){
-    var _boss = this._bossList.find(b=>b.id==boss.id);
-    if(_boss){
-      _boss.name = boss.name;
-      _boss.area = boss.area;
-      _boss.location = boss.location;
-      _boss.description = boss.description;
-      _boss.lifePoints = boss.lifePoints;
-      _boss.image = boss.image;
+  async addBoss(boss:Boss){
+    var _boss = {
+      docId:boss.id,
+      name:boss.name,
+      area:boss.area,
+      location:boss.location,
+      description:boss.description,
+      lifePoints:boss.lifePoints
+    };
+    if(boss['pictureFile']){
+      var response = await this.uploadImage(boss['pictureFile']);
+      _boss['image'] = response.image;
     }
-    
-    this._boss.next(this._bossList);
+    try {
+      await this.firebase.createDocument('bosses', _boss);  
+    } catch (error) {
+      console.log(error);
+    }
   }
 
-  deleteBossById(id:number){
-    this._bossList = this._bossList.filter(b=>b.id != id); 
-    this._boss.next(this._bossList);
+  uploadImage(file):Promise<any>{  
+    return new Promise(async (resolve, reject)=>{
+      try {
+        const data = await this.firebase.imageUpload(file);  
+        resolve(data);
+      } catch (error) {
+        resolve(error);
+      }
+    });
+  }
+
+  getBossById(id:string):Promise<Boss>{
+    return new Promise<Boss>(async (resolve, reject)=>{
+      try {
+        var boss = (await this.firebase.getDocument('bosses', id));
+        resolve({
+          id:0,
+          docId:boss.id,
+          name:boss.data["name"],
+          area:boss.data["area"],
+          location:boss.data["location"],
+          description:boss.data["description"],
+          lifePoints:boss.data["lifePoints"],
+          image:boss.data["image"]
+        });  
+      } catch (error) {
+        reject(error);
+      }
+    });
+  }
+
+  async updateBoss(boss:Boss){
+    var _boss = {
+      docId:boss.docId,
+      name:boss.name,
+      area:boss.area,
+      location:boss.location,
+      description:boss.description,
+      lifepoints:boss.lifePoints,
+    };
+    if(boss['pictureFile']){
+      var response:FileUploaded = await this.uploadImage(boss['pictureFile']);
+      _boss['image'] = response.file;
+    }
+    try {
+      await this.firebase.updateDocument('bosses', _boss.docId, _boss);  
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async deleteBoss(boss:Boss){
+    await this.firebase.deleteDocument('bosses', boss.docId);
+  }
+
+  async writeToFile(){
+    var dataToText = JSON.stringify(this._boss.value);
+    var data = new Blob([dataToText], {type: 'text/plain'});
+    this.firebase.fileUpload(data, 'text/plain', 'bosses', '.txt');
   }
 }

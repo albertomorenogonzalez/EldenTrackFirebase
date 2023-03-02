@@ -7,14 +7,12 @@ import { BehaviorSubject, lastValueFrom } from 'rxjs';
 import { User, UserLogin, UserRegister } from '../models/user.model';
 import { BossService } from './boss.service';
 import { CompletedBossService } from './completed-boss.service';
-import { FirebaseService } from './firebase/firebase-service';
+import { FileUploaded, FirebaseService } from './firebase/firebase-service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserService {
-
-  private _userList: User[] = [];
 
   private _userLogged:BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public userLogged$ = this._userLogged.asObservable();
@@ -37,7 +35,7 @@ export class UserService {
     private translate: TranslateService
   ) {
     this.init();
-    this.unsubscr = this.firebase.subscribeToCollection('usuarios',this._userSubject, this.mapUser);
+    this.unsubscr = this.firebase.subscribeToCollection('users',this._userSubject, this.mapUser);
   }
 
   gOnDestroy(): void {
@@ -62,8 +60,10 @@ export class UserService {
   private async init(){
     this.firebase.isLogged$.subscribe(async (logged)=>{
       if(logged){
-        this._user.next((await this.firebase.getDocument('usuarios', this.firebase.getUser().uid)).data as User);
+        this._user.next((await this.firebase.getDocument('users', this.firebase.getUser().uid)).data as User);
+        this.currentUser = await this.getUserById(this.firebase.getUser().uid);
         this.router.navigate(['folder/home']);
+        this.presentToastLoggedUser();
       }
       this._userLogged.next(logged);
     });
@@ -74,10 +74,10 @@ export class UserService {
     return new Promise<string>(async (resolve, reject)=>{
       if(!this._userLogged.value){
         try {
-          await this.firebase.connectUserWithEmailAndPassword(credentials.username, credentials.password);
+          await this.firebase.connectUserWithEmailAndPassword(credentials.email, credentials.password);
           this.presentToastLoggedUser();
-          this.currentUser = await this.getUserByIdd(this.firebase.getUser().uid);
         } catch (error) {
+          this.presentToastIncorrectUserOrPassword();
           reject(error);
         }
       }
@@ -110,7 +110,7 @@ export class UserService {
           birthdate: data.birthdate,
           
         };
-        await this.firebase.createDocumentWithId('usuarios', userData, user.user.uid);
+        await this.firebase.createDocumentWithId('users', userData, user.user.uid);
         await this.firebase.connectUserWithEmailAndPassword(data.email, data.password);
       } else {
         throw new Error('Already connected');
@@ -125,10 +125,10 @@ export class UserService {
     return this._userSubject.value;
   }
 
-  getUserByIdd(id:string):Promise<User>{
+  getUserById(id:string):Promise<User>{
     return new Promise<User>(async (resolve, reject)=>{
       try {
-        var user = (await this.firebase.getDocument('usuarios', id));
+        var user = (await this.firebase.getDocument('users', id));
         resolve({
           id:0,
           docId: user.id,
@@ -147,38 +147,79 @@ export class UserService {
     });
   }
 
-  getUserById(id: number):User {
-    return this._userList.find(u=>u.id==id);
-  }
 
-  
-
-  addUser(user:User) {
-    this._userList.push(user);
-  }
-
-  updateUser(user:User) {
-    var _user = this._userList.find(u=>u.id==user.id);
-    if(_user){
-      _user.name = user.name;
-      _user.surname = user.surname;
-      _user.birthdate = user.birthdate;
-      _user.email = user.email;
-      _user.username = user.username;
-      _user.password = user.password;
-      _user.profilePick = user.profilePick
+  async addUser(user:User){
+    var _user = {
+      docId: user.id,
+      admin: user['admin'],
+      name:user['name'],
+      surname: user['surname'],
+      birthdate: user['birthdate'],
+      email: user['email'],
+      username: user['username'],
+      password: user['password']
+    };
+    if(user['pictureFile']){
+      var response = await this.uploadImage(user['pictureFile']);
+      _user['profilePick'] = response.image;
     }
-    
-    
+    try {
+      await this.firebase.createDocument('users', _user);  
+    } catch (error) {
+      console.log(error);
+    }
   }
 
-  deleteUserById(id:number) {
-    this._userList = this._userList.filter(u=>u.id != id); 
+
+  uploadImage(file):Promise<any>{  
+    return new Promise(async (resolve, reject)=>{
+      try {
+        const data = await this.firebase.imageUpload(file);  
+        resolve(data);
+      } catch (error) {
+        resolve(error);
+      }
+    });
+  }
+
+
+  async updateUser(user:User){
+    var _user = {
+      docId: user.id,
+      admin: user['admin'],
+      name:user['name'],
+      surname: user['surname'],
+      birthdate: user['birthdate'],
+      email: user['email'],
+      username: user['username'],
+      password: user['password']
+    };
+    if(user['pictureFile']){
+      var response:FileUploaded = await this.uploadImage(user['profilePick']);
+      _user['profilePick'] = response.file;
+    }
+    try {
+      await this.firebase.updateDocument('users', user.docId, _user);  
+    } catch (error) {
+      console.log(error);
+    }
+      
+  }
+
+  async deleteUser(user:User){
+    try {
+      // O funciona deleteUser() o deleteDocument, nunca ambos
+      this.firebase.deleteUser();
+      this.firebase.deleteDocument('users', user.docId)
+      this.signOut();
+    } catch (error) {
+      console.log(error);
+    }
   }
 
 
   numberOfBossesCompleted(user: User):number {
-    return this.completedbData.getCompletedBossesByUserId(user.id).length
+    return this.completedbData.getCompletedBossesByUserId(user.docId).length
   }
 
   numberOfTotalBosses(): number {
@@ -192,7 +233,7 @@ export class UserService {
 
   async presentToastLoggedUser() {
     const toast = await this.toastController.create({
-      message: await lastValueFrom(this.translate.get('toasts.logged')),
+      message: await lastValueFrom(this.translate.get('toasts.logged')) + this.currentUser?.username + '!',
       duration: 1500,
       position: 'top'
     });

@@ -63,7 +63,7 @@ registerLocaleData(en)
       }
       }),
     IonicStorageModule.forRoot({
-      name: '__tareandodb',
+      name: '__elden-track',
           driverOrder: [Drivers.IndexedDB, Drivers.LocalStorage]
     }),
     ReactiveFormsModule
@@ -93,6 +93,8 @@ registerLocaleData(en)
     deps: [LocaleService],
     useClass: LocaleId
   },
+  Camera,
+  File
  
   ]
 })

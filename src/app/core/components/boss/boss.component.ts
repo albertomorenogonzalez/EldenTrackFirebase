@@ -58,7 +58,7 @@ export class BossComponent implements OnInit {
   }
 
   completed() {
-    return this.completedBossData.getBossCompletedByBossId(this.boss.id, this.getCurrentUser()?.id)
+    return false//this.completedBossData.getBossCompletedByBossId(this.boss.docId, this.getCurrentUser().docId)
   }
 
   onNewCompletedBoss(boss: Boss){

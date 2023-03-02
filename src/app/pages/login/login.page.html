@@ -13,8 +13,8 @@
             <ion-card-content>
               <form [formGroup]="form" (ngSubmit)="onSignIn()" (keyup.enter)="onSignIn()">
                 <ion-item>
-                  <ion-label position="floating">{{'login.user' | translate}}</ion-label>
-                  <ion-input placeholder="Usuario" formControlName="username" type="text"></ion-input>
+                  <ion-label position="floating">Email</ion-label>
+                  <ion-input placeholder="Email" formControlName="email" type="text"></ion-input>
                 </ion-item>
                 <ion-item>
                   <ion-label position="floating">{{'login.password' | translate}}</ion-label>

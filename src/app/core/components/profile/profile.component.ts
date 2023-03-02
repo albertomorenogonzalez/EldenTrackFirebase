@@ -24,11 +24,15 @@ export class ProfileComponent implements OnInit {
     this.onEdit.emit(this.user);
   }
 
+  onDeleteClick(){
+    this.onDelete.emit(this.user);
+  }
+
   getProgress(user: User) {
     return this.userData.progress(user);
   }
 
-  getPercentace(user: User): string {
+  getPercentace(user: User) {
     return (this.getProgress(user) * 100).toFixed(2);
   }
 

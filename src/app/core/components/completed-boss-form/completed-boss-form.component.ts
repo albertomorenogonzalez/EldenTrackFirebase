@@ -32,11 +32,11 @@ export class CompletedBossFormComponent implements OnInit {
     private bossData: BossService
   ) { 
     this.form = this.fb.group({
-      id:[null],
-      idBoss:[this.bossData.addedBoss?.id, [Validators.required]],
-      idUser:[this.data.currentUser?.id, [Validators.required]],
-      startDate:["", [Validators.required]],
-      finishDate:["", [Validators.required]],
+      id:[0],
+      idBoss:[this.bossData.addedBoss.docId, [Validators.required]],
+      idUser:[this.data.currentUser.docId, [Validators.required]],
+      startDate:["", [Validators.min(1)]],
+      finishDate:["", [Validators.min(1)]],
       notes:[""]
     });
   }

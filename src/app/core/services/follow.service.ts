@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
+import { DocumentData } from 'firebase/firestore';
 import { BehaviorSubject } from 'rxjs';
 import { Follow } from '../models/follow.model';
+import { FirebaseService } from './firebase/firebase-service';
 import { UserService } from './user.service';
 
 @Injectable({
@@ -8,123 +10,108 @@ import { UserService } from './user.service';
 })
 export class FollowService {
 
-  private _followsList: Follow[] = [
-    {
-      id: 1,
-      idUser: 1,
-      idFollowed: 2
-    },
-    {
-      id: 2,
-      idUser: 1,
-      idFollowed: 3
-    },
-    {
-      id: 3,
-      idUser: 1,
-      idFollowed: 4
-    },
-    {
-      id: 4,
-      idUser: 1,
-      idFollowed: 5
-    },
-    {
-      id: 5,
-      idUser: 1,
-      idFollowed: 6
-    },
-    {
-      id: 6,
-      idUser: 2,
-      idFollowed: 1
-    },
-    {
-      id: 7,
-      idUser: 2,
-      idFollowed: 3
-    },
-    {
-      id: 8,
-      idUser: 3,
-      idFollowed: 1
-    },
-    {
-      id: 9,
-      idUser: 3,
-      idFollowed: 2
-    },
-    {
-      id: 10,
-      idUser: 4,
-      idFollowed: 1
-    },
-    {
-      id: 11,
-      idUser: 4,
-      idFollowed: 6
-    },
-    {
-      id: 12,
-      idUser: 5,
-      idFollowed: 1
-    },
-    {
-      id: 13,
-      idUser: 5,
-      idFollowed: 6
-    },
-    {
-      id: 14,
-      idUser: 6,
-      idFollowed: 4
-    },
-    {
-      id: 15,
-      idUser: 6,
-      idFollowed: 5
-    },
-  ]
+  private _followsList: Follow[] = []
 
   private _follow:BehaviorSubject<Follow[]> = new BehaviorSubject(this._followsList);
   public follow$ = this._follow.asObservable();
 
-  id:number = this._followsList.length+1;
+  unsubscr;
   constructor(
-  ) { }
+    private firebase:FirebaseService
+  ) {
+    this.unsubscr = this.firebase.subscribeToCollection('follows',this._follow, this.mapFollow);
+  }
 
-  public idUser: number | undefined;
-  public idFollowed!: number;
+  ngOnDestroy(): void {
+    this.unsubscr();
+  }
+
+  private mapFollow(doc:DocumentData){
+    return {
+      id:0,
+      docId:doc['id'],
+      idUser:doc['data']().idUser,
+      idFollowed:doc['data']().idFollowed,
+    };
+  }
+
+  public idUser: string | undefined;
+  public idFollowed!: string;
   public followPage: Boolean = false;
 
   getFollowList() {
-    return this._followsList;
+    return this._follow.value;
   }
 
-  getFollowsByUserId(idUser?: number) {
+  getFollowsByUserId(idUser?: string) {
     return this._followsList.find(f=>f.idUser == idUser)
   }
 
-  getFollowById(id: number) {
-    return this._followsList.find(u=>u.id==id);
+  getFollowById(id: string) {
+    return new Promise<Follow>(async (resolve, reject)=>{
+      try {
+        var follow = (await this.firebase.getDocument('follows', id));
+        resolve({
+          id:0,
+          docId: follow.id,
+          idUser: follow.data['idUser'],
+          idFollowed: follow.data['idFollowed'],
+        });
+      } catch (error) {
+        reject(error);
+      }
+    });
   }
 
-  getFollowByIdFollowed(idFollowed?: number, idUser?: number) {
-    return this._followsList.find(f=>f.idFollowed==idFollowed && f.idUser==idUser)
+  getFollowsBy(field, value){
+    return new Promise<Follow[]>(async (resolve, reject)=>{
+      try {
+        var follows = (await this.firebase.getDocumentsBy('follows', field, value)).map<Follow>(doc=>{
+          return {
+            id:0,
+            docId:doc.id,
+            idUser:doc.data['idUser'],
+            idFollowed:doc.data['idFollowed']
+          }
+        });
+        resolve(follows);  
+      } catch (error) {
+        reject(error);
+      }
+    });
   }
 
-  follow(follow:Follow) {
-    follow.id = this.id++;
-    this._followsList.push(follow);
-    this._follow.next(this._followsList);
+  getFollowsByIdUser(idUser:string):Promise<Follow[]>{
+    return this.getFollowsBy('idUser', idUser);
   }
 
-  unfollowById(id?:number) {
-    this._followsList = this._followsList.filter(f=>f.idFollowed != id); 
-    this._follow.next(this._followsList);
+  
+  getFollowsByIdFollowed(idFollowed:string):Promise<Follow[]>{   
+    return this.getFollowsBy('idFollowed', idFollowed);
   }
 
-  getFollowedUsers(idUser?: number) {
+  async follow(follow:Follow) {
+    var _follow = {
+      docId: follow.id,
+      idUser: follow['idUser'],
+      idFollowed: follow['idFollowed']
+    };
+    try {
+      await this.firebase.createDocument('follows', _follow);  
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async unfollowById(id?:string) {
+    try {
+      await this.firebase.deleteDocument('follows', id);  
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  getFollowedUsers(idUser?: string) {
     return this._followsList.filter(follow=>follow.idUser == idUser)
   }
   

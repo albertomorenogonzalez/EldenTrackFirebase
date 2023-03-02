@@ -10,7 +10,6 @@ import { SocialPage } from './social.page';
 import { HttpClientModule, HttpClient } from '@angular/common/http';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { createTranslateLoader } from 'src/app/core';
-import { UserComponent } from 'src/app/core/components/user/user.component';
 import { RouteReuseStrategy } from '@angular/router';
 
 @NgModule({

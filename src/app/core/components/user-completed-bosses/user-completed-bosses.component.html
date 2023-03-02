@@ -41,7 +41,7 @@
   <ng-container>
     <ion-card-content>
       <ng-container *ngFor="let completedb of getCompletedBosses() | async" size="6" size-xl="3">
-        <app-completed-boss *ngIf="completedb.idUser==user?.id" [completedb]="completedb" ></app-completed-boss>
+        <app-completed-boss *ngIf="completedb.idUser===user?.docId" [completedBoss]="completedb" ></app-completed-boss>
       </ng-container>
     </ion-card-content>
   </ng-container>

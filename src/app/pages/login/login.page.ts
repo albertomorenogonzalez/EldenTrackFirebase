@@ -4,7 +4,6 @@ import { Router } from '@angular/router';
 import { ModalController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 import { RegisterFormComponent } from 'src/app/core';
-import { User } from 'src/app/core/models/user.model';
 import { UserService } from 'src/app/core/services/user.service';
 
 @Component({
@@ -22,8 +21,8 @@ export class LoginPage implements OnInit {
     private router:Router
   ) { 
     this.form = this.formBuilder.group({
-      username:["", [Validators.required, Validators.email]],
-      password:["", Validators.required]
+      email:["albertomorenogonzalez95@gmail.com", [Validators.required, Validators.email]],
+      password:["Genichiro3", Validators.required]
     });
     
   }
@@ -55,6 +54,7 @@ export class LoginPage implements OnInit {
       await this.user.login(this.form.value);
       this.router.navigate(['folder/home'], {replaceUrl:true});
     } catch (error) {
+      
       console.log(error);
 
     }

@@ -40,17 +40,17 @@ export class FollowedUsersPage implements OnInit {
   }
 
   getFollowedUsers() {
-    return this.followData.getFollowedUsers(this.getCurrentUser()?.id);
+    return this.followData.getFollowedUsers(this.getCurrentUser().docId);
   }
 
-  getUserById(idFollowed: number) {
+  getUserById(idFollowed: string) {
     return this.userData.getUserById(idFollowed);
   }
 
   getItemDisplay(follow: Follow) {
     var display = 'inline';
 
-    if (this.getUserById(follow.idFollowed)==null || follow.idUser!=this.getCurrentUser()?.id) {
+    if (this.getUserById(follow.idFollowed)==null || follow.idUser!=this.getCurrentUser().docId) {
       display = 'none';
     } else {
       display = 'inline';
@@ -87,9 +87,9 @@ export class FollowedUsersPage implements OnInit {
     const { role } = await alert.onDidDismiss();
   }
 
-  async presentToastUnfollow(idFollowed: number) {
+  async presentToastUnfollow(idFollowed: string) {
     const toast = await this.toastController.create({
-      message: await lastValueFrom(this.translate.get('toasts.unfollow')) + this.getUserById(idFollowed)?.username,
+      message: await lastValueFrom(this.translate.get('toasts.unfollow')) + (await this.getUserById(idFollowed)).username,
       duration: 1500,
       position: 'top',
       color: 'danger'

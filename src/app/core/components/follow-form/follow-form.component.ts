@@ -3,7 +3,7 @@ import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ModalController, ToastController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { lastValueFrom } from 'rxjs';
-import { Follow } from '../../models';
+import { Follow, User } from '../../models';
 import { FollowService, UserService } from '../../services';
 
 @Component({
@@ -16,7 +16,7 @@ export class FollowFormComponent implements OnInit {
   form:FormGroup;
   @Input('follow') set follow(follow:Follow) {
     if(follow) {
-      this.form.controls['id'].setValue(follow.id);
+      this.form.controls['id'].setValue(follow.docId);
       this.form.controls['idUser'].setValue(follow.idUser);
       this.form.controls['idFollowed'].setValue(follow.idFollowed);
     }
@@ -50,13 +50,13 @@ export class FollowFormComponent implements OnInit {
     this.modal.dismiss(null, 'cancel');
   }
 
-  getUserById() {
+  async getUserById() {
     return this.userData.getUserById(this.followData.idFollowed);
   }
 
   async presentToastFollow() {
     const toast = await this.toastController.create({
-      message: await lastValueFrom(this.translate.get('toasts.startedFollow')) + this.getUserById()?.username + '!',
+      message: await lastValueFrom(this.translate.get('toasts.startedFollow')) + (await this.getUserById()).username + '!',
       duration: 1500,
       position: 'top',
       color: 'success'

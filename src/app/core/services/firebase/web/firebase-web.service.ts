@@ -1,6 +1,6 @@
 import { Injectable, OnDestroy } from "@angular/core";
 import { BehaviorSubject } from "rxjs";
-import { FirebaseDocument, FirebaseService, FIRESTORAGE_PREFIX_PATH } from "../firebase-service";
+import { FileUploaded, FirebaseDocument, FirebaseService, FIRESTORAGE_PREFIX_PATH } from "../firebase-service";
 import { initializeApp,  deleteApp, getApp } from "firebase/app";
 import { getAnalytics, setUserId, setUserProperties } from "firebase/analytics";
 import { getFirestore, addDoc, collection, updateDoc, doc, onSnapshot, getDoc, setDoc, query, where, getDocs, Unsubscribe, DocumentData, deleteDoc} from "firebase/firestore";
@@ -48,6 +48,44 @@ export class FirebaseWebService extends FirebaseService implements OnDestroy{
 
     const app = initializeApp(firebaseConfig);
     const analytics = getAnalytics(app);
+  }
+
+  public fileUpload(blob: Blob, mimeType:string, prefix:string, extension:string):Promise<FileUploaded>{
+    return new Promise(async (resolve, reject) => {
+      var freeConnection = false;
+      if(this.auth.currentUser==null){
+        try {
+
+          await signInAnonymously(this.auth);
+          freeConnection = true;
+        } catch (error) {
+          reject(error);
+        }
+      }
+      const path = FIRESTORAGE_PREFIX_PATH+"/"+prefix+"-"+Date.now() + extension;
+      const storageRef = ref(this.webStorage, path);
+      const metadata = {
+        contentType: mimeType,
+      };
+      uploadBytes(storageRef, blob).then(async (snapshot) => {
+        getDownloadURL(storageRef).then(async downloadURL => {
+          if(freeConnection)
+              await signOut(this.auth);
+          resolve({
+            path,
+            file: downloadURL,
+          });
+        }).catch(async error=>{
+          if(freeConnection)
+              await signOut(this.auth);
+          reject(error);
+        });
+      }).catch(async (error) => {
+        if(freeConnection)
+              await signOut(this.auth);
+        reject(error);
+      });
+    });
   }
 
   public imageUpload(blob: Blob): Promise<any> {
@@ -115,7 +153,7 @@ export class FirebaseWebService extends FirebaseService implements OnDestroy{
   public createDocumentWithId(collectionName:string, data:any, docId:string):Promise<void>{
     return new Promise((resolve,reject)=>{
       const collectionRef = collection(this.db, collectionName);
-      const docRef = doc(this.db, 'usuarios', docId);
+      const docRef = doc(this.db, 'users', docId);
       setDoc(docRef, data).then(docRef => resolve()
       ).catch(err =>  reject(err));
     });

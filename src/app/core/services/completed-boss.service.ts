@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
+import { DocumentData } from 'firebase/firestore';
 import { BehaviorSubject } from 'rxjs';
 import { CompletedBoss } from '../models/completed-boss.model';
+import { FirebaseService } from './firebase/firebase-service';
 import { UserService } from './user.service';
 
 @Injectable({
@@ -8,7 +10,7 @@ import { UserService } from './user.service';
 })
 export class CompletedBossService {
 
-  private _completedBossesList: CompletedBoss[] = [
+  private _completedBossesList: CompletedBoss[] = [] /*[
     {
       id: 1,
       idBoss: 1,
@@ -201,36 +203,73 @@ export class CompletedBossService {
       finishDate: '2022-12-11',
       notes: 'GG'
     },
-  ]
+  ]*/
 
   private _completedBoss:BehaviorSubject<CompletedBoss[]> = new BehaviorSubject(this._completedBossesList);
   public completedBoss$ = this._completedBoss.asObservable();
 
-  id:number = this._completedBossesList.length+1;
+  unsubscr;
   constructor(
-  ) { 
+    private firebase:FirebaseService
+  ) {
+    this.unsubscr = this.firebase.subscribeToCollection('completed_bosses',this._completedBoss, this.mapCompletedBoss);
+  }
+
+  ngOnDestroy(): void {
+    this.unsubscr();
+  }
+
+  private mapCompletedBoss(doc:DocumentData){
+    return {
+      id:0,
+      docId:doc['id'],
+      idBoss:doc['data']().idBoss,
+      idUser:doc['data']().idUser,
+      startDate:doc['data']().startDate,
+      finishDate:doc['data']().finishDate,
+      notes:doc['data']().notes
+    };
   }
 
   getCompletedBosses() {
-    return this._completedBossesList;
+    return this._completedBoss.value;
   }
 
-  getCompletedBossById(id: number) {
-    return this._completedBossesList.find(c=>c.id==id);
+  getCompletedBossById(id:string){
+    return new Promise<CompletedBoss>(async (resolve, reject)=>{
+      try {
+        var response = (await this.firebase.getDocument('completed_bosses', id));
+        resolve({
+          id:0,
+          docId:response.id,
+          idBoss:response.data['idBoss'],
+          idUser:response.data['idUser'],
+          startDate:response.data['startDate'],
+          finishDate:response.data['finishDate'],
+          notes:response.data['notes']
+        });
+      } catch (error) {
+        reject(error);
+      }
+    });
   }
 
-  getCompletedBossesByUserId(idUser: number) {
-    return this._completedBossesList.filter(c=>c.idUser == idUser)
+  
+
+  getCompletedBossesByUserId(idUser: string) {
+    return this._completedBossesList.filter(c=>c.idUser === idUser)
   }
 
-  getBossCompletedByBossId(idBoss: number, idUser?: number) {
-    return this._completedBossesList.find(c=>c.idBoss==idBoss && c.idUser==idUser)
+  getBossCompletedByBossId(idBoss: string, idUser?: string) {
+    return this._completedBossesList.find(c=>c.idBoss===idBoss && c.idUser===idUser)
   }
 
-  addCompletedBoss(completedBoss:CompletedBoss) {
-    completedBoss.id = this.id++;
-    this._completedBossesList.push(completedBoss);
-    this._completedBoss.next(this._completedBossesList);
+  async addCompletedBoss(completedb: CompletedBoss){
+    try {
+      await this.firebase.createDocument('completed_bosses', completedb);  
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   updateCompletedBoss(completedBoss:CompletedBoss) {

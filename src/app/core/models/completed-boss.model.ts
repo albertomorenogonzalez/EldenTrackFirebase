@@ -1,7 +1,8 @@
 export interface CompletedBoss {
   id:number,
-  idBoss:number,
-  idUser:number,
+  docId?:string,
+  idBoss:string,
+  idUser:string,
   startDate:string,
   finishDate:string,
   notes?:string

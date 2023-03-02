@@ -1,5 +1,6 @@
 export interface Follow {
   id:number,
-  idUser:number,
-  idFollowed:number
+  docId:string,
+  idUser:string,
+  idFollowed:string
 }

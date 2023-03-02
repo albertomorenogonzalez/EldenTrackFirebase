@@ -37,7 +37,9 @@ export class ProfilePage implements OnInit {
   }
 
   getCompletedBosses() {
+    console.log(this.completedBossData.completedBoss$)
     return this.completedBossData.completedBoss$;
+    
   }
 
   async presentCompletedBossForm(completedb?:CompletedBoss){
@@ -62,7 +64,6 @@ export class ProfilePage implements OnInit {
   }
 
   onEditCompletedBoss(completedb: CompletedBoss){
-    this.bossData.addedBoss = this.bossData.getBossById(completedb.idBoss)
     this.presentCompletedBossForm(completedb);
   }
 
@@ -91,7 +92,7 @@ export class ProfilePage implements OnInit {
     this.presentUserForm(user);
   }
 
-  async onDeleteAlert(completedb: CompletedBoss){
+  async onDeleteCompletedBossAlert(completedb: CompletedBoss){
     const alert = await this.alert.create({
       header: await lastValueFrom(this.translate.get('alerts.warning')),
       message: await lastValueFrom(this.translate.get('alerts.deleteCompletedBoss')),
@@ -119,10 +120,41 @@ export class ProfilePage implements OnInit {
     const { role } = await alert.onDidDismiss();
   }
 
+  async onDeleteUserAlert(user: User){
+    const alert = await this.alert.create({
+      header: await lastValueFrom(this.translate.get('alerts.warning')),
+      message: await lastValueFrom(this.translate.get('alerts.deleteUser')),
+      buttons: [
+        {
+          text: await lastValueFrom(this.translate.get('home.cancel')),
+          role: 'cancel',
+          handler: () => {
+            console.log("Operacion cancelada");
+          },
+        },
+        {
+          text: await lastValueFrom(this.translate.get('home.delete')),
+          role: 'confirm',
+          handler: () => {
+            this.userData.deleteUser(user);
+          },
+        },
+      ],
+    });
+
+    await alert.present();
+
+    const { role } = await alert.onDidDismiss();
+  }
+
+  onDeleteUser(user: User){
+    this.onDeleteUserAlert(user);
+  } 
+
   
 
   onDeleteCompletedBoss(completedb: CompletedBoss){
-     this.onDeleteAlert(completedb);
+     this.onDeleteCompletedBossAlert(completedb);
   } 
   
   getItemDisplay(completdb: CompletedBoss) {

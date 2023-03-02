@@ -50,11 +50,11 @@ export class UserComponent implements OnInit {
     return this.userData.progress(user);
   }
 
-  userIsFollowed(idFollowed: number) {
-    return this.followData.getFollowByIdFollowed(idFollowed, this.getCurrentUser()?.id);
+  userIsFollowed(idFollowed: string) {
+    return this.followData.getFollowsByIdFollowed(idFollowed);
   }
 
-  getPercentace(user: User): string {
+  getPercentace(user: User) {
     return (this.getProgress(user) * 100).toFixed(2);
   }
 
@@ -82,14 +82,14 @@ export class UserComponent implements OnInit {
     });
   }
 
-  onFollowUser(idUser: number) {
+  onFollowUser(idUser: string) {
     this.presentFollowForm();
-    this.followData.idUser = this.getCurrentUser()?.id;
+    this.followData.idUser = this.getCurrentUser().docId;
     this.followData.idFollowed = idUser;
   }
 
-  onUnfollowUser(idFollowed: number) {
-    this.onUnfollowAlert(this.followData.getFollowByIdFollowed(idFollowed, this.getCurrentUser()?.id));
+  async onUnfollowUser(idFollowed: string) {
+    //this.onUnfollowAlert(this.followData.getFollowByIdFollowed(idFollowed));
   }
 
 
