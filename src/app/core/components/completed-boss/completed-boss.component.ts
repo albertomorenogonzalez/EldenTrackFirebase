@@ -43,12 +43,16 @@ export class CompletedBossComponent implements OnInit {
 
   ngOnInit() {}
 
+  getCurrentUser() {
+    return this.userSvc.currentUser
+  }
+
   onEditClick(){
-    this.onEdit.emit(this.completedb);
+    this.onEdit.emit(this.completedBoss);
   }
 
   onDeleteClick(){
-    this.onDelete.emit(this.completedb);
+    this.onDelete.emit(this.completedBoss);
   }
 
 }

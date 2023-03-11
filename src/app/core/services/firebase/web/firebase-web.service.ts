@@ -89,41 +89,7 @@ export class FirebaseWebService extends FirebaseService implements OnDestroy{
   }
 
   public imageUpload(blob: Blob): Promise<any> {
-    return new Promise(async (resolve, reject) => {
-      var freeConnection = false;
-      if(this.auth.currentUser==null){
-        try {
-
-          await signInAnonymously(this.auth);
-          freeConnection = true;
-        } catch (error) {
-          reject(error);
-        }
-      }
-      const path = FIRESTORAGE_PREFIX_PATH+"/"+Date.now() + '.jpg';
-      const storageRef = ref(this.webStorage, path);
-      const metadata = {
-        contentType: 'image/jpeg',
-      };
-      uploadBytes(storageRef, blob).then(async (snapshot) => {
-        getDownloadURL(storageRef).then(async downloadURL => {
-          if(freeConnection)
-              await signOut(this.auth);
-          resolve({
-            path,
-            image: downloadURL,
-          });
-        }).catch(async error=>{
-          if(freeConnection)
-              await signOut(this.auth);
-          reject(error);
-        });
-      }).catch(async (error) => {
-        if(freeConnection)
-              await signOut(this.auth);
-        reject(error);
-      });
-    });
+    return this.fileUpload(blob,'image/jpeg', 'image', ".jpg");
   }
 
   ngOnDestroy(): void {
@@ -152,8 +118,7 @@ export class FirebaseWebService extends FirebaseService implements OnDestroy{
 
   public createDocumentWithId(collectionName:string, data:any, docId:string):Promise<void>{
     return new Promise((resolve,reject)=>{
-      const collectionRef = collection(this.db, collectionName);
-      const docRef = doc(this.db, 'users', docId);
+      const docRef = doc(this.db, collectionName, docId);
       setDoc(docRef, data).then(docRef => resolve()
       ).catch(err =>  reject(err));
     });

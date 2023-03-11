@@ -17,10 +17,10 @@ export interface FirebaseDocument{
 export interface FirestoreImages{
 
 }
-export const FIRESTORE_TASKS_COLLECTION = 'tareando-tasks';
-export const FIRESTORE_PEOPLE_COLLECTION = 'tareando-people';
-export const FIRESTORE_ASSIGNMENTS_COLLECTION = 'tareando-assignments';
-export const FIRESTORE_IMAGES_COLLECTION = 'tareando-images';
+export const FIRESTORE_BOSSES_COLLECTION = 'elden-track-bosses';
+export const FIRESTORE_USERS_COLLECTION = 'elden-track-users';
+export const FIRESTORE_COMPLETED_BOSSES_COLLECTION = 'elden-track-completed_bosses';
+export const FIRESTORE_IMAGES_COLLECTION = 'eleden-track-images';
 export const FIRESTORAGE_PREFIX_PATH = 'elden-track-images';
 
 

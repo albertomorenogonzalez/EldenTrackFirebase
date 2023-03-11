@@ -37,7 +37,6 @@ export class ProfilePage implements OnInit {
   }
 
   getCompletedBosses() {
-    console.log(this.completedBossData.completedBoss$)
     return this.completedBossData.completedBoss$;
     
   }
@@ -108,7 +107,7 @@ export class ProfilePage implements OnInit {
           text: await lastValueFrom(this.translate.get('home.delete')),
           role: 'confirm',
           handler: () => {
-            this.completedBossData.deleteCompletedBossById(completedb.id);
+            this.completedBossData.deleteCompletedBoss(completedb);
             this.presentToastDelete();
           },
         },
@@ -154,7 +153,7 @@ export class ProfilePage implements OnInit {
   
 
   onDeleteCompletedBoss(completedb: CompletedBoss){
-     this.onDeleteCompletedBossAlert(completedb);
+    this.onDeleteCompletedBossAlert(completedb);
   } 
   
   getItemDisplay(completdb: CompletedBoss) {

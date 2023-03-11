@@ -97,7 +97,7 @@ export class BossService {
   private _boss:BehaviorSubject<Boss[]> = new BehaviorSubject([]);
   public boss$ = this._boss.asObservable();
 
-  public addedBoss:Boss|undefined;
+  public addedBoss:Boss;
 
   unsubscr;
   constructor(
@@ -138,7 +138,7 @@ export class BossService {
     };
     if(boss['pictureFile']){
       var response = await this.uploadImage(boss['pictureFile']);
-      _boss['image'] = response.image;
+      _boss['image'] = response.file;
     }
     try {
       await this.firebase.createDocument('bosses', _boss);  
@@ -192,6 +192,7 @@ export class BossService {
       _boss['image'] = response.file;
     }
     try {
+      console.log(_boss.docId)
       await this.firebase.updateDocument('bosses', _boss.docId, _boss);  
     } catch (error) {
       console.log(error);

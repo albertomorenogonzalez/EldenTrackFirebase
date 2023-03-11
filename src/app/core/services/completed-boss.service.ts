@@ -272,21 +272,20 @@ export class CompletedBossService {
     }
   }
 
-  updateCompletedBoss(completedBoss:CompletedBoss) {
-    var _completedBoss = this._completedBossesList.find(c=>c.id==completedBoss.id);
-    if(_completedBoss){
-      _completedBoss.idBoss = completedBoss.idBoss;
-      _completedBoss.idUser = completedBoss.idUser;
-      _completedBoss.startDate = completedBoss.startDate;
-      _completedBoss.finishDate = completedBoss.finishDate;
-      _completedBoss.notes = completedBoss.notes;
+  async updateCompletedBoss(completedb:CompletedBoss){
+    try {
+      await this.firebase.updateDocument('completed_bosses', completedb.docId, completedb);
+    } catch (error) {
+      console.log(error);
     }
     
-    this._completedBoss.next(this._completedBossesList);
   }
 
-  deleteCompletedBossById(id:number) {
-    this._completedBossesList = this._completedBossesList.filter(c=>c.id != id); 
-    this._completedBoss.next(this._completedBossesList);
+  async deleteCompletedBoss(completedb:CompletedBoss){
+    try {
+      await this.firebase.deleteDocument('completed_bosses', completedb.docId);
+    } catch (error) {
+      console.log(error);
+    }
   }
 }

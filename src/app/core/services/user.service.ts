@@ -98,7 +98,7 @@ export class UserService {
       if (!this._userLogged.value) {
         const user = await this.firebase.createUserWithEmailAndPassword(data.email, data.password);
         const userData = {
-          uid: user.user.uid,
+          docId: user.user.uid,
           admin: false,
           username: data.username, 
           profilePick: data.profilePick,
@@ -208,10 +208,9 @@ export class UserService {
 
   async deleteUser(user:User){
     try {
-      // O funciona deleteUser() o deleteDocument, nunca ambos
-      this.firebase.deleteUser();
-      this.firebase.deleteDocument('users', user.docId)
-      this.signOut();
+      await this.firebase.deleteUser();
+      await this.firebase.deleteDocument('users', user.docId);
+      await window.location.reload();
     } catch (error) {
       console.log(error);
     }

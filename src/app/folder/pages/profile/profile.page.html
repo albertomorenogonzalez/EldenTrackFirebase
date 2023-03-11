@@ -14,7 +14,7 @@
   </div>
   <ion-grid>
     <ion-col *ngFor="let completedb of getCompletedBosses() | async" size="6" size-xl="3">
-      <app-completed-boss [completedBoss]="completedb" (onEdit)="onEditCompletedBoss($event)" (onDelete)="onDeleteCompletedBoss($event)"></app-completed-boss>
+      <app-completed-boss *ngIf="getUserActive().docId===completedb.idUser" [completedBoss]="completedb" (onEdit)="onEditCompletedBoss($event)" (onDelete)="onDeleteCompletedBoss($event)"></app-completed-boss>
     </ion-col>
   </ion-grid>
 </ion-content>

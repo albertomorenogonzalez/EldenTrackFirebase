@@ -12,8 +12,8 @@
           <ion-card-subtitle>{{'completedBoss.startDate' | translate}} : {{completedBoss.startDate | date:'shortDate':undefined:locale.locale}}</ion-card-subtitle>
           <ion-card-subtitle>{{'completedBoss.finishDate' | translate}} : {{completedBoss.finishDate | date:'shortDate':undefined:locale.locale}}</ion-card-subtitle>
           <ion-card-subtitle *ngIf="completedBoss.notes">{{'completedBoss.notes' | translate}} : {{completedBoss.notes}}</ion-card-subtitle>
-          <ion-button *ngIf="(user.user$ | async).docId===completedBoss.idUser" (click)="onEditClick()"><ion-icon name="create-outline"></ion-icon></ion-button>
-          <ion-button *ngIf="(user.user$ | async).docId===completedBoss.idUser" color="danger" (click)="onDeleteClick()"><ion-icon name="trash-outline" ></ion-icon></ion-button>
+          <ion-button *ngIf="getCurrentUser().docId===completedBoss.idUser" (click)="onEditClick()"><ion-icon name="create-outline"></ion-icon></ion-button>
+          <ion-button *ngIf="getCurrentUser().docId===completedBoss.idUser" color="danger" (click)="onDeleteClick()"><ion-icon name="trash-outline" ></ion-icon></ion-button>
         </ion-col>
       </ion-row>
     </ion-grid>

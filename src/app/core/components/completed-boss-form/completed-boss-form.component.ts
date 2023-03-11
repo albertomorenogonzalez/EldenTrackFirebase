@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ModalController, ToastController } from '@ionic/angular';
+import { BehaviorSubject } from 'rxjs';
 import { CompletedBoss } from '../../models/completed-boss.model';
 import { BossService, CompletedBossService, UserService } from '../../services';
 
@@ -13,9 +14,12 @@ export class CompletedBossFormComponent implements OnInit {
 
   form:FormGroup;
   mode:"New" | "Edit" = "New";
+
+  
   @Input('CompletedBoss') set completedb(completedb:CompletedBoss){
     if(completedb){
       this.form.controls['id'].setValue(completedb.id);
+      this.form.controls['docId'].setValue(completedb.docId);
       this.form.controls['idBoss'].setValue(completedb.idBoss);
       this.form.controls['idUser'].setValue(completedb.idUser);
       this.form.controls['startDate'].setValue(completedb.startDate);
@@ -25,18 +29,20 @@ export class CompletedBossFormComponent implements OnInit {
     }
   }
 
+
   constructor(
     private fb:FormBuilder,
     private modal:ModalController,
     private data:UserService,
-    private bossData: BossService
+    public bossData: BossService
   ) { 
     this.form = this.fb.group({
       id:[0],
-      idBoss:[this.bossData.addedBoss.docId, [Validators.required]],
-      idUser:[this.data.currentUser.docId, [Validators.required]],
-      startDate:["", [Validators.min(1)]],
-      finishDate:["", [Validators.min(1)]],
+      docId:[''],
+      idBoss:[this.bossData.addedBoss.docId, [Validators.min(1)]],
+      idUser:[this.data.currentUser.docId, [Validators.min(1)]],
+      startDate:["", [Validators.required]],
+      finishDate:["", [Validators.required]],
       notes:[""]
     });
   }
