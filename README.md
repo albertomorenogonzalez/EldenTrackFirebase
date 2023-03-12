@@ -6,7 +6,9 @@
   <img src="http://drive.google.com/uc?export=view&id=1F305eFMEY4uTeeYH2G3XRDkkta613qTa">
 <p>
 
-Elden Track es una aplicación hecha con Ionic y Angular que consiste en un tracker de jefes del videojuego de FromSoftware Elden Ring, ganador del Game of the Year 2022.
+Elden Track es una aplicación hecha con Ionic y Angular que consiste en un tracker de jefes del videojuego de FromSoftware Elden Ring, ganador del Game of the Year 2022. Los datos a los que accede la aplicación se encuentran alojados en Firebase. En el siguiente video se muestra como se manipulan esos datos desde la aplicación:
+[https://www.youtube.com/watch?v=yFY0Ac3gC7s&authuser=0](https://www.youtube.com/watch?v=yFY0Ac3gC7s&authuser=0)
+
 El siguiente enlace lleva un vídeo donde se explica el funcionamiento de la página: [https://www.youtube.com/watch?v=xpVgeLLO1_Q](https://www.youtube.com/watch?v=xpVgeLLO1_Q)
 
 <br>
@@ -25,7 +27,7 @@ Aquí se insertan un nombre de usuario y una contraseña para iniciar sesión. T
 
 <br>
 
-![home](http://drive.google.com/uc?export=view&id=1-femG9f2T5HPMBHWGyrGAogfRt6Rhdje)
+![home](http://drive.google.com/uc?export=view&id=1S7AkrF4yUTb4lx_3kAp7TTpSGewHTPE8)
 
 <br>
 
@@ -46,7 +48,7 @@ Aquí se puede asignar uno de los jefes como completado. Añadir un nuevo jefe, 
 
 <br>
 
-![profile](http://drive.google.com/uc?export=view&id=1lQcZZhCV7gQD97CIaCPU-9Qy34jGY0Wi)
+![profile](http://drive.google.com/uc?export=view&id=1MmNWOrPBx5uinj9EMwtjXGyYgLZSy_7Q)
 
 <br>
 
@@ -56,7 +58,7 @@ En ella se mustran aquellos jefes que el usuario activo ha marcado como completa
 
 <br>
 
-![social](http://drive.google.com/uc?export=view&id=1oWH3MB315vqwOOvg4cYYtjH7lE-xqAjF)
+![social](http://drive.google.com/uc?export=view&id=1cFyEuYR2RdZm18XLX3sBgPwtvTz2LsXj)
 
 <br>
 
