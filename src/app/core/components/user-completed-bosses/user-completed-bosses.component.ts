@@ -22,20 +22,8 @@ export class UserCompletedBossesComponent implements OnInit {
 
   ngOnInit() {}
 
-  getProgressInNumbers(user:User): string {
-    return '(' + this.userData.numberOfBossesCompleted(user) + '/' + this.userData.numberOfTotalBosses() + ')' ;
-  }
-
   getCompletedBosses() {
     return this.completedbData.completedBoss$
-  }
-
-  getProgress(user: User) {
-    return this.userData.progress(user);
-  }
-
-  getPercentace(user: User): string {
-    return (this.getProgress(user) * 100).toFixed(2);
   }
 
   onDismiss(result: any){

@@ -14,7 +14,6 @@ export class ProfileComponent implements OnInit {
   @Input() user: User | undefined;
   
   constructor(
-    private userData: UserService,
     public locale:LocaleService
   ) { }
 
@@ -26,18 +25,6 @@ export class ProfileComponent implements OnInit {
 
   onDeleteClick(){
     this.onDelete.emit(this.user);
-  }
-
-  getProgress(user: User) {
-    return this.userData.progress(user);
-  }
-
-  getPercentace(user: User) {
-    return (this.getProgress(user) * 100).toFixed(2);
-  }
-
-  getProgressInNumbers(user:User): string {
-    return '(' + this.userData.numberOfBossesCompleted(user) + '/' + this.userData.numberOfTotalBosses() + ')' ;
   }
 
 

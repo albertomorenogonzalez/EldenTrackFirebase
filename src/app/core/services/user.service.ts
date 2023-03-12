@@ -29,8 +29,6 @@ export class UserService {
   constructor(
     private firebase:FirebaseService,
     private router:Router,
-    private bossData: BossService,
-    private completedbData: CompletedBossService,
     private toastController: ToastController,
     private translate: TranslateService
   ) {
@@ -52,7 +50,6 @@ export class UserService {
       birthdate: doc['data']().birthdate,
       email: doc['data']().email,
       username: doc['data']().username,
-      password: doc['data']().password,
       profilePick: doc['data']().profilePick
     };
   }
@@ -138,7 +135,6 @@ export class UserService {
           birthdate: user.data['birthdate'],
           email: user.data['email'],
           username: user.data['username'],
-          password: user.data['password'],
           profilePick: user.data['profilePick'] 
         });  
       } catch (error) {
@@ -156,12 +152,11 @@ export class UserService {
       surname: user['surname'],
       birthdate: user['birthdate'],
       email: user['email'],
-      username: user['username'],
-      password: user['password']
+      username: user['username']
     };
     if(user['pictureFile']){
       var response = await this.uploadImage(user['pictureFile']);
-      _user['profilePick'] = response.image;
+      _user['profilePick'] = response.file;
     }
     try {
       await this.firebase.createDocument('users', _user);  
@@ -185,14 +180,13 @@ export class UserService {
 
   async updateUser(user:User){
     var _user = {
-      docId: user.id,
+      docId: user.docId,
       admin: user['admin'],
       name:user['name'],
       surname: user['surname'],
       birthdate: user['birthdate'],
       email: user['email'],
-      username: user['username'],
-      password: user['password']
+      username: user['username']
     };
     if(user['pictureFile']){
       var response:FileUploaded = await this.uploadImage(user['profilePick']);
@@ -210,23 +204,15 @@ export class UserService {
     try {
       await this.firebase.deleteUser();
       await this.firebase.deleteDocument('users', user.docId);
-      await window.location.reload();
     } catch (error) {
       console.log(error);
     }
   }
 
-
-  numberOfBossesCompleted(user: User):number {
-    return this.completedbData.getCompletedBossesByUserId(user.docId).length
-  }
-
-  numberOfTotalBosses(): number {
-    return this.bossData.getBossList().length
-  }
-
-  progress(user: User) {
-    return this.numberOfBossesCompleted(user)/this.numberOfTotalBosses();
+  async writeToFile(){
+    var dataToText = JSON.stringify(this._userSubject.value);
+    var data = new Blob([dataToText], {type: 'text/plain'});
+    this.firebase.fileUpload(data, 'text/plain', 'users', '.txt');
   }
 
 

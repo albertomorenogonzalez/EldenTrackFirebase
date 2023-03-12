@@ -18,9 +18,8 @@ export class UserComponent implements OnInit {
 
   @Output() onEdit = new EventEmitter;
   @Output() onDelete = new EventEmitter;
-  @Input() follow!: Follow;
-  @Input() user: User | undefined;
-  @Input() boss!: Boss;
+  @Input() user: User;
+  @Input() boss: Boss;
   
   constructor(
     private userData: UserService,
@@ -46,20 +45,8 @@ export class UserComponent implements OnInit {
     this.onDelete.emit(this.user);
   }
 
-  getProgress(user: User) {
-    return this.userData.progress(user);
-  }
-
   userIsFollowed(idFollowed: string) {
-    return this.followData.getFollowsByIdFollowed(idFollowed);
-  }
-
-  getPercentace(user: User) {
-    return (this.getProgress(user) * 100).toFixed(2);
-  }
-
-  getProgressInNumbers(user:User): string {
-    return '(' + this.userData.numberOfBossesCompleted(user) + '/' + this.userData.numberOfTotalBosses() + ')' ;
+    return false//this.followData.getFollowsByIdFollowed(idFollowed);
   }
 
   getCurrentUser() {
@@ -70,7 +57,9 @@ export class UserComponent implements OnInit {
     const modal = await this.modal.create({
       component:FollowFormComponent,
       componentProps:{
-        follow:follow
+        follow:follow,
+        user:this.getCurrentUser(),
+        followedUser:this.user
       },
       cssClass:'follow'
     });
@@ -84,14 +73,7 @@ export class UserComponent implements OnInit {
 
   onFollowUser(idUser: string) {
     this.presentFollowForm();
-    this.followData.idUser = this.getCurrentUser().docId;
-    this.followData.idFollowed = idUser;
   }
-
-  async onUnfollowUser(idFollowed: string) {
-    //this.onUnfollowAlert(this.followData.getFollowByIdFollowed(idFollowed));
-  }
-
 
   showCompletedBosses(user: User, boss: Boss) {
     this.userInformation(user, boss);
@@ -125,7 +107,7 @@ export class UserComponent implements OnInit {
           text: await lastValueFrom(this.translate.get('home.unfollow')),
           role: 'confirm',
           handler: () => {
-            this.followData.unfollowById(follow?.idFollowed);
+            this.followData.unfollowById(follow?.docId);
             this.presentToastUnfollow();
           },
         },

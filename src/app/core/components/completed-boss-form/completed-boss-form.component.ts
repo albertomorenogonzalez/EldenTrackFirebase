@@ -1,9 +1,9 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { ModalController, ToastController } from '@ionic/angular';
-import { BehaviorSubject } from 'rxjs';
+import { ModalController } from '@ionic/angular';
+import { Boss, User } from '../../models';
 import { CompletedBoss } from '../../models/completed-boss.model';
-import { BossService, CompletedBossService, UserService } from '../../services';
+import { UserService } from '../../services';
 
 @Component({
   selector: 'app-completed-boss-form',
@@ -14,8 +14,7 @@ export class CompletedBossFormComponent implements OnInit {
 
   form:FormGroup;
   mode:"New" | "Edit" = "New";
-
-  
+  @Input() boss: Boss;
   @Input('CompletedBoss') set completedb(completedb:CompletedBoss){
     if(completedb){
       this.form.controls['id'].setValue(completedb.id);
@@ -29,18 +28,16 @@ export class CompletedBossFormComponent implements OnInit {
     }
   }
 
-
   constructor(
     private fb:FormBuilder,
     private modal:ModalController,
-    private data:UserService,
-    public bossData: BossService
+    private userData: UserService
   ) { 
     this.form = this.fb.group({
       id:[0],
       docId:[''],
-      idBoss:[this.bossData.addedBoss.docId, [Validators.min(1)]],
-      idUser:[this.data.currentUser.docId, [Validators.min(1)]],
+      idBoss:['', [Validators.min(1)]],
+      idUser:[this.getUserActive().docId, [Validators.min(1)]],
       startDate:["", [Validators.required]],
       finishDate:["", [Validators.required]],
       notes:[""]
@@ -48,6 +45,7 @@ export class CompletedBossFormComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.form.controls['idBoss'].setValue(this.boss.docId)
   }
 
   formatDate(date:moment.Moment){
@@ -62,10 +60,10 @@ export class CompletedBossFormComponent implements OnInit {
     this.modal.dismiss(null, 'cancel');
   }
 
-  getAddedBoss() {
-    return this.bossData.addedBoss
+  getUserActive():User {
+    return this.userData.currentUser;
   }
-
+ 
 
 
 }

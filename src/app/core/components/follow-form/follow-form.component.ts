@@ -14,30 +14,27 @@ import { FollowService, UserService } from '../../services';
 export class FollowFormComponent implements OnInit {
 
   form:FormGroup;
-  @Input('follow') set follow(follow:Follow) {
-    if(follow) {
-      this.form.controls['id'].setValue(follow.docId);
-      this.form.controls['idUser'].setValue(follow.idUser);
-      this.form.controls['idFollowed'].setValue(follow.idFollowed);
-    }
-  }
+  @Input() user: User;
+  @Input() followedUser: User;
 
   constructor(
     private userData: UserService,
-    private followData: FollowService,
     private fb:FormBuilder,
     private modal:ModalController,
     private toastController: ToastController,
     private translate: TranslateService
   ) { 
     this.form = this.fb.group({
-      id:[null],
-      idUser:[this.followData.idUser, [Validators.required]],
-      idFollowed:[this.followData.idFollowed, [Validators.required]]
+      id:[0],
+      docId:[''],
+      idUser:['', [Validators.required]],
+      userFollowed:[this.followedUser, [Validators.required]]
     });
   }
 
   ngOnInit() {
+    this.form.controls['idUser'].setValue(this.user.docId)
+    this.form.controls['userFollowed'].setValue(this.followedUser)
   }
   
 
@@ -51,7 +48,7 @@ export class FollowFormComponent implements OnInit {
   }
 
   async getUserById() {
-    return this.userData.getUserById(this.followData.idFollowed);
+    return this.userData.getUserById(this.followedUser.docId);
   }
 
   async presentToastFollow() {

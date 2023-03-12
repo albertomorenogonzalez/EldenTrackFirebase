@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AlertController, ModalController, ToastController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { lastValueFrom } from 'rxjs';
-import { BossService, RegisterFormComponent } from 'src/app/core';
+import { Boss, BossService, RegisterFormComponent, UpdateUserFormComponent } from 'src/app/core';
 import { CompletedBossFormComponent } from 'src/app/core/components/completed-boss-form/completed-boss-form.component';
 import { CompletedBoss } from 'src/app/core/models/completed-boss.model';
 import { User } from 'src/app/core/models/user.model';
@@ -32,20 +32,20 @@ export class ProfilePage implements OnInit {
   ngOnInit() {
   }
 
-  getUserActive():User|undefined {
+  getUserActive():User {
     return this.userData.currentUser;
   }
 
   getCompletedBosses() {
     return this.completedBossData.completedBoss$;
-    
   }
 
   async presentCompletedBossForm(completedb?:CompletedBoss){
     const modal = await this.modal.create({
       component:CompletedBossFormComponent,
       componentProps:{
-        completedb:completedb
+        completedb:completedb,
+        boss: await this.bossData.getBossById(completedb.idBoss)
       }
     });
     modal.present();
@@ -68,7 +68,7 @@ export class ProfilePage implements OnInit {
 
   async presentUserForm(user?:User){
     const modal = await this.modal.create({
-      component:RegisterFormComponent,
+      component:UpdateUserFormComponent,
       componentProps:{
         user:user
       }
@@ -136,6 +136,7 @@ export class ProfilePage implements OnInit {
           role: 'confirm',
           handler: () => {
             this.userData.deleteUser(user);
+            this.userData.signOut();
           },
         },
       ],
@@ -190,5 +191,9 @@ export class ProfilePage implements OnInit {
 
     await toast.present();
     
+  }
+
+  async onExport(){
+    this.bossData.writeToFile();
   }
 }

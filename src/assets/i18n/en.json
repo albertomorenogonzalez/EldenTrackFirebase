@@ -109,5 +109,11 @@
       "passwordMatch": "Passwords do not match",
       "passwordProto": "Password must have at least 8 characters, one uppercase letter, one lowercase letter and one number",
       "email": "You must introduce a valid email"
+  },
+  "change-picture":{
+    "title":"Change image",
+    "library":"From gallery",
+    "camera":"From camera",
+    "file":"From your computer"
   }
 }

@@ -1,14 +1,10 @@
 <form id="modal" [formGroup]="form" (ngSubmit)="onSubmit()" (keyup.enter)="onSubmit()">
   <ion-item>
     <ion-avatar>
-      <ion-img src="{{(getUserById() | async).profilePick}}"></ion-img>
+      <ion-img src="{{followedUser.profilePick}}"></ion-img>
     </ion-avatar>
-    <ion-label>{{(getUserById() | async).username}}</ion-label>
+    <ion-label>{{followedUser.username}}</ion-label>
   <ion-button [disabled]="!form.valid" type="submit">{{'home.follow' | translate}}</ion-button>
   </ion-item>
   
 </form>
-
-
-
-<!-- Los usuarios no se eliminan de la autentificación -->

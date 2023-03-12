@@ -25,7 +25,6 @@ export class BossComponent implements OnInit {
     private completedBossData: CompletedBossService,
     public locale:LocaleService,
     private userData: UserService,
-    private bossData: BossService,
     private toastController: ToastController,
     private translate: TranslateService
   ) { }
@@ -36,7 +35,8 @@ export class BossComponent implements OnInit {
     const modal = await this.modal.create({
       component:CompletedBossFormComponent,
       componentProps:{
-        completedb:completedb
+        completedb:completedb,
+        boss:this.boss
       }
     });
     modal.present();
@@ -57,13 +57,8 @@ export class BossComponent implements OnInit {
     return this.userData.currentUser
   }
 
-  completed() {
-    return false//this.completedBossData.getBossCompletedByBossId(this.boss.docId, this.getCurrentUser().docId)
-  }
-
   onNewCompletedBoss(boss: Boss){
-    this.presentCompletedBossForm();  
-    this.bossData.addedBoss = boss;
+    this.presentCompletedBossForm();
   }
 
   onEditClick(){

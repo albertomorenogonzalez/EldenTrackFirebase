@@ -22,6 +22,5 @@ export interface User {
   birthdate:string,
   email:string,
   username:string,
-  password:string,
   profilePick:string
 }

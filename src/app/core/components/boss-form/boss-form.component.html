@@ -1,4 +1,7 @@
 <ion-content>
+  <ion-toolbar>
+    <ion-title>{{mode=="Edit" ? ['boss.updateInformation' | translate] : ['boss.addInformation' | translate]}}</ion-title>
+  </ion-toolbar>
   <input id="fileLoader" type="file" #fileLoader name="files" title="Load Files" hidden>
   <ion-img  *ngIf="currentImage.value" [src]="currentImage$ | async"></ion-img>
   <ion-img *ngIf="!currentImage.value" src="https://ionicframework.com/docs/img/demos/thumbnail.svg"></ion-img>
@@ -22,9 +25,6 @@
     </ng-template>
   </ion-popover>
   <form [formGroup]="form" (ngSubmit)="onSubmit()" (keyup.enter)="onSubmit()">
-    <ion-toolbar>
-      <ion-title>{{mode=="Edit" ? ['boss.updateInformation' | translate] : ['boss.addInformation' | translate]}}</ion-title>
-    </ion-toolbar>
     <ion-item>
       <ion-label position="floating">{{'boss.bossName' | translate}}</ion-label>
       <ion-input placeholder="{{'user.placeholderName' | translate}}" formControlName="name" type="text"></ion-input>

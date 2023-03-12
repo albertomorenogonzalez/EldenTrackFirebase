@@ -6,7 +6,8 @@
     <ion-grid>
       <ion-row>
         <ion-col size="12" size-md="3">
-          <img alt="{{boss.name}}" src="{{boss.image}}">
+          <ion-img *ngIf="boss.image" alt="{{boss.name}}" src="{{boss.image}}"></ion-img>
+          <ion-img *ngIf="!boss.image" src="http://drive.google.com/uc?export=view&id=1vSlO45EELqrz7Vh-Avm440NtGh3_7XKM"></ion-img>
         </ion-col>
         <ion-col size="12" size-md="6">
           <ion-row>
@@ -17,8 +18,7 @@
           </ion-row>
         </ion-col>
         <ion-col size="12" size-md="3">
-          <ion-button color="success" *ngIf="!completed()" (click)="onNewCompletedBoss(boss)"><ion-icon name="add-outline"></ion-icon></ion-button>
-          <ion-button *ngIf="completed()"><ion-icon name="checkmark-outline"></ion-icon></ion-button>
+          <ion-button color="success" (click)="onNewCompletedBoss(boss)"><ion-icon name="add-outline"></ion-icon></ion-button>
           <ion-button (click)="onEditClick()"><ion-icon name="create-outline"></ion-icon></ion-button>
           <ion-button color="danger" (click)="onDeleteClick()"><ion-icon name="trash-outline"></ion-icon></ion-button>
         </ion-col>

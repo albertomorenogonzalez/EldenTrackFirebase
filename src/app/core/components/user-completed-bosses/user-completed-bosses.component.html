@@ -23,14 +23,10 @@
                 <ion-card-subtitle>{{'user.fullName' | translate}}: {{user.name}} {{user.surname}}</ion-card-subtitle>
                 <ion-card-subtitle>{{'user.birthdate' | translate}}: {{user.birthdate | date:'shortDate':undefined:locale.locale}}</ion-card-subtitle>
               </ion-col>
-              <ion-col size="12" size-md="6">
-                <ion-card-subtitle>{{'user.progress' | translate}}: {{getPercentace(user)}} %  {{getProgressInNumbers(user)}}</ion-card-subtitle>
-              </ion-col>
             </ion-row>
           </ion-col>
         </ion-row>
       </ion-grid>
-      <ion-progress-bar [value]="getProgress(user)"></ion-progress-bar>
     </ion-card-content>
   </ion-card>
   <ion-card>

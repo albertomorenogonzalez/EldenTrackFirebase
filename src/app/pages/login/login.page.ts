@@ -1,8 +1,7 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ModalController } from '@ionic/angular';
-import { Subscription } from 'rxjs';
 import { RegisterFormComponent } from 'src/app/core';
 import { UserService } from 'src/app/core/services/user.service';
 
@@ -21,8 +20,8 @@ export class LoginPage implements OnInit {
     private router:Router
   ) { 
     this.form = this.formBuilder.group({
-      email:["albertomorenogonzalez95@gmail.com", [Validators.required, Validators.email]],
-      password:["Genichiro3", Validators.required]
+      email:["", [Validators.required, Validators.email]],
+      password:["", Validators.required]
     });
     
   }

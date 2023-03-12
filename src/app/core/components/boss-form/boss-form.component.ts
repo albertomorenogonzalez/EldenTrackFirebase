@@ -27,7 +27,7 @@ export class BossFormComponent implements OnInit {
       this.form.controls['description'].setValue(boss.description);
       this.form.controls['lifePoints'].setValue(boss.lifePoints);
       this.form.controls['image'].setValue(boss.image);
-      if(boss.image)
+      if(boss.image) 
         this.currentImage.next(boss.image);
       this.mode = "Edit";
     }
@@ -58,7 +58,6 @@ export class BossFormComponent implements OnInit {
 
 
   onSubmit(){
-    
     this.modal.dismiss({boss: this.form.value, mode:this.mode}, 'ok');
   }
 

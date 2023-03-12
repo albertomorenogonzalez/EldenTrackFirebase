@@ -110,5 +110,11 @@
       "passwordMatch": "Las contraseñas no coinciden",
       "passwordProto": "La contraseña debe tener al menos 8 caracteres, una letra mayúscula, una letra minúscula y un número",
       "email": "Debe introducir un email válido"
+  },
+  "change-picture":{
+    "title":"Cambiar imagen",
+    "library":"Desde la galería",
+    "camera":"Desde la cámara",
+    "file":"Desde tu equipo"
   }
 }

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { AlertController, ToastController } from '@ionic/angular';
 import { TranslateService } from '@ngx-translate/core';
 import { lastValueFrom } from 'rxjs';
-import { Follow, UserService } from 'src/app/core';
+import { Follow, User, UserService } from 'src/app/core';
 import { FollowService } from 'src/app/core/services/follow.service';
 
 @Component({
@@ -50,7 +50,7 @@ export class FollowedUsersPage implements OnInit {
   getItemDisplay(follow: Follow) {
     var display = 'inline';
 
-    if (this.getUserById(follow.idFollowed)==null || follow.idUser!=this.getCurrentUser().docId) {
+    if (follow.idUser!=this.getCurrentUser().docId) {
       display = 'none';
     } else {
       display = 'inline';
@@ -75,8 +75,8 @@ export class FollowedUsersPage implements OnInit {
           text: await lastValueFrom(this.translate.get('home.unfollow')),
           role: 'confirm',
           handler: () => {
-            this.followData.unfollowById(follow.idFollowed);
-            this.presentToastUnfollow(follow.idFollowed);
+            this.followData.unfollowById(follow['docId']);
+            this.presentToastUnfollow(follow.userFollowed);
           },
         },
       ],
@@ -87,9 +87,9 @@ export class FollowedUsersPage implements OnInit {
     const { role } = await alert.onDidDismiss();
   }
 
-  async presentToastUnfollow(idFollowed: string) {
+  async presentToastUnfollow(userFollowed: User) {
     const toast = await this.toastController.create({
-      message: await lastValueFrom(this.translate.get('toasts.unfollow')) + (await this.getUserById(idFollowed)).username,
+      message: await lastValueFrom(this.translate.get('toasts.unfollow')) + userFollowed.username,
       duration: 1500,
       position: 'top',
       color: 'danger'

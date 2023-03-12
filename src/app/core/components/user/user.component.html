@@ -8,16 +8,11 @@
       <ion-row size="3">
         <ion-button (click)="showCompletedBosses(user, boss)"><ion-icon name="reader-outline" ></ion-icon></ion-button>
         <ng-container *ngIf="isFollowPage()">
-          <!--<ion-button color="success" *ngIf="!userIsFollowed(user.docId)" (click)="onFollowUser(user.docId)"><ion-icon name="person-add-outline" ></ion-icon></ion-button>
-          <ion-button color="danger" *ngIf="userIsFollowed(user.docId)" (click)="onUnfollowUser(user.docId)"><ion-icon name="person-remove-outline" ></ion-icon></ion-button>
-          <ion-button color="danger" (click)="onDeleteClick()"><ion-icon name="trash-outline" ></ion-icon></ion-button>-->
+          <ion-button color="success" *ngIf="!userIsFollowed(user.docId)" (click)="onFollowUser(user.docId)"><ion-icon name="person-add-outline" ></ion-icon></ion-button>
+          <ion-button color="danger" *ngIf="userIsFollowed(user.docId)"><ion-icon name="person-remove-outline" ></ion-icon></ion-button>
         </ng-container>
         <ion-button *ngIf="!isFollowPage()" color="danger" (click)="onDeleteClick()"><ion-icon name="person-remove-outline" ></ion-icon></ion-button>
       </ion-row>
     </ion-grid>
   </ion-card-header>
-  <ion-card-content>
-    {{'user.progress' | translate}}: {{getPercentace(user)}} %  {{getProgressInNumbers(user)}}
-  </ion-card-content>
-  <ion-progress-bar [value]="getProgress(user)"></ion-progress-bar>
 </ion-card>

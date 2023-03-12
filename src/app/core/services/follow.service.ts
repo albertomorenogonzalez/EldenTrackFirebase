@@ -31,12 +31,10 @@ export class FollowService {
       id:0,
       docId:doc['id'],
       idUser:doc['data']().idUser,
-      idFollowed:doc['data']().idFollowed,
+      userFollowed:doc['data']().userFollowed,
     };
   }
 
-  public idUser: string | undefined;
-  public idFollowed!: string;
   public followPage: Boolean = false;
 
   getFollowList() {
@@ -55,7 +53,7 @@ export class FollowService {
           id:0,
           docId: follow.id,
           idUser: follow.data['idUser'],
-          idFollowed: follow.data['idFollowed'],
+          userFollowed: follow.data['userFollowed'],
         });
       } catch (error) {
         reject(error);
@@ -71,7 +69,7 @@ export class FollowService {
             id:0,
             docId:doc.id,
             idUser:doc.data['idUser'],
-            idFollowed:doc.data['idFollowed']
+            userFollowed:doc.data['userFollowed']
           }
         });
         resolve(follows);  
@@ -85,16 +83,11 @@ export class FollowService {
     return this.getFollowsBy('idUser', idUser);
   }
 
-  
-  getFollowsByIdFollowed(idFollowed:string):Promise<Follow[]>{   
-    return this.getFollowsBy('idFollowed', idFollowed);
-  }
-
   async follow(follow:Follow) {
     var _follow = {
       docId: follow.id,
       idUser: follow['idUser'],
-      idFollowed: follow['idFollowed']
+      userFollowed: follow['userFollowed']
     };
     try {
       await this.firebase.createDocument('follows', _follow);  
